@@ -5,6 +5,7 @@ rePatternB = re.compile('[?!\\n]*(.*.)[\\t]*')
 
 def getserialNumber():
     return rePatternA.findall(str(io.StringIO(os.popen(".\\platform-tools\\adb devices").read()).read()))
+    #returns Serial of all connected devices as a list
 
 def getIMEI(serialNumber):
     return rePatternB.findall(str(io.StringIO(os.popen( r'''.\\platform-tools\\adb -s {} shell "service call iphonesubinfo 1 | toybox cut -d \"'\" -f2 | toybox grep -Eo '[0-9]' | toybox xargs | toybox sed 's/\ //g'"'''.format(DUTadd[i])).read()).read()))
@@ -43,8 +44,20 @@ def getCPURev(serialNumber):
 	return rePatternB(str(io.StringIO(os.popen( r'''.\\platform-tools\\adb shell getprop ro.product.cpu.abi''').read()).read()))
 
 def emergencyCall(serialNumber, callNumber):
-	os.system('.\\platform-tools\\adb -s {} shell am start -a android.intent.action.CALL -d tel:{}}'.format(serialNumber, callNumber))
+	os.popen('.\\platform-tools\\adb -s {} shell am start -a android.intent.action.CALL_PRIVILEGED -d tel:{}}'.format(serialNumber, callNumber))
 	#change to priveleged call type
-	
+
 def makeCall(serialNumber, callNumber):
-	os.system('.\\platform-tools\\adb -s {} shell am start -a android.intent.action.CALL -d tel:{}}'.format(serialNumber, callNumber)) 
+	os.popen('.\\platform-tools\\adb -s {} shell am start -a android.intent.action.CALL -d tel:{}}'.format(serialNumber, callNumber))
+
+def endCall(serialNumber):
+	os.popen('.\\platform-tools\\adb -s {} shell input keyevent KEYCODE_ENDCALL')
+
+def getCallStatus(serialNumber):
+	DevStatus = str(io.StringIO(os.popen('''.\\platform-tools\\adb -s {} shell "dumpsys telephony.registry | grep 'mCallState' " '''.format(DeviceSN)).read()).read())
+    return DevStatus[-3]
+    '''Status 0 is waiting
+       Status 1 is ringing
+       Status 2 is active call'''
+
+
