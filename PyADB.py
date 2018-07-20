@@ -66,5 +66,8 @@ def push(serialNumber ,source, destination):
 def pull(serialNumber, source, destination):
 	rePatternB(str(io.StringIO(os.popen(r'''.\\platform-tools\\adb -s {} pull ,{} , {}'''.format(serialNumber, source, destination)).read()).read()))
 
-def isntall(serialNumber,APK):
+def install(serialNumber,APK):
 	rePatternB(str(io.StringIO(os.popen(r'''.\\platform-tools\\adb -s {} install {}'''.format(serialNumber, APK)).read()).read()))
+
+def uninstall(serialNumber,APK):
+	rePatternB(str(io.StringIO(os.popen(r'''.\\platform-tools\\adb -s {} uninstall {}'''.format(serialNumber, APK)).read()).read()))
